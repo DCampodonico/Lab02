@@ -1,3 +1,14 @@
 <resources>
     <string name="app_name">Lab02</string>
+    <string name="titulo">Pedite la cena!!!</string>
+    <string name="btn_delivery">DELIVERY</string>
+    <string name="btn_reservar">RESERVAR MESA</string>
+    <string name="textView_horario">Seleccione el horario</string>
+    <string name="switch_notificacion">Notificar Reserva 1 hora antes</string>
+    <string name="radioBtn_plato">Plato</string>
+    <string name="radioBtn_postre">Postre</string>
+    <string name="radioBtn_bebida">Bebida</string>
+    <string name="btn_agregar">AGREGAR</string>
+    <string name="btn_confirmar">CONFIRMAR PEDIDO</string>
+    <string name="btn_reiniciar">REINICIAR</string>
 </resources>
