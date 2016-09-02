@@ -1,3 +1,3 @@
 <component name="DependencyValidationManager">
-  <scope name="Unnamed1" pattern="lib:*..*||src:*..*" />
+  <scope name="Unnamed1" pattern="file[app]:*||file[Lab02]:*" />
 </component>
