@@ -26,6 +26,7 @@ public class MainActivity extends AppCompatActivity implements RadioGroup.OnChec
     private ListView listViewOpciones;
     private ArrayAdapter<ElementoMenu> listAdapterOpciones;
     private ArrayList<ElementoMenu> listElementos;
+
     private DecimalFormat f = new DecimalFormat("##.00");
 
     private ElementoMenu[] listaBebidas;
@@ -37,6 +38,7 @@ public class MainActivity extends AppCompatActivity implements RadioGroup.OnChec
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         setParametros();
+        listViewOpciones.setAdapter(listAdapterOpciones);
         rgOpcionesPlato.setOnCheckedChangeListener(this);
     }
 
@@ -52,7 +54,7 @@ public class MainActivity extends AppCompatActivity implements RadioGroup.OnChec
         buttonReiniciar = (Button) findViewById(R.id.buttonReiniciar);
         listViewOpciones = (ListView) findViewById(R.id.listViewOpciones);
         listElementos = new ArrayList<ElementoMenu>();
-        listAdapterOpciones = new ArrayAdapter<ElementoMenu>(this, android.R.layout.simple_list_item_multiple_choice, listElementos);
+        listAdapterOpciones = new ArrayAdapter(this, android.R.layout.simple_list_item_multiple_choice, listElementos);
     }
 
     @Override
@@ -61,15 +63,18 @@ public class MainActivity extends AppCompatActivity implements RadioGroup.OnChec
             case -1: break;
             case R.id.radioButtonPlato:
                 listElementos.clear();
-                listElementos.addAll(Arrays.<ElementoMenu>asList(listaPlatos));
+                listElementos.addAll(Arrays.asList(listaPlatos));
+                listAdapterOpciones.notifyDataSetChanged();
                 break;
             case R.id.radioButtonPostre:
                 listElementos.clear();
-                listElementos.addAll(Arrays.<ElementoMenu>asList(listaPostre));
+                listElementos.addAll(Arrays.asList(listaPostre));
+                listAdapterOpciones.notifyDataSetChanged();
                 break;
             case R.id.radioButtonBebida:
                 listElementos.clear();
-                listElementos.addAll(Arrays.<ElementoMenu>asList(listaBebidas));
+                listElementos.addAll(Arrays.asList(listaBebidas));
+                listAdapterOpciones.notifyDataSetChanged();
                 break;
 
         }
@@ -151,7 +156,7 @@ public class MainActivity extends AppCompatActivity implements RadioGroup.OnChec
         listaPlatos[10]=new ElementoMenu(11,"Picada 1");
         listaPlatos[11]=new ElementoMenu(12,"Picada 2");
         listaPlatos[12]=new ElementoMenu(13,"Hamburguesa");
-        listaPlatos[12]=new ElementoMenu(14,"Calamares");
+        listaPlatos[13]=new ElementoMenu(14,"Calamares");
         // inicia lista de postres
         listaPostre= new ElementoMenu[15];
         listaPostre[0]=new ElementoMenu(1,"Helado");
