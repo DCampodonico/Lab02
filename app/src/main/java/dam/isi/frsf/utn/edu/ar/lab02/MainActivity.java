@@ -1,7 +1,12 @@
 package dam.isi.frsf.utn.edu.ar.lab02;
 
 import android.os.Bundle;
+import android.support.annotation.BoolRes;
 import android.support.v7.app.AppCompatActivity;
+import android.text.method.ScrollingMovementMethod;
+import android.util.SparseBooleanArray;
+import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
@@ -16,7 +21,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Random;
 
-public class MainActivity extends AppCompatActivity implements RadioGroup.OnCheckedChangeListener {
+public class MainActivity extends AppCompatActivity implements RadioGroup.OnCheckedChangeListener, View.OnClickListener {
     private ToggleButton tbDeliveryReservarMesa;
     private Spinner spnHorario;
     private Switch swNotificacion;
@@ -26,6 +31,7 @@ public class MainActivity extends AppCompatActivity implements RadioGroup.OnChec
     private ListView listViewOpciones;
     private ArrayAdapter<ElementoMenu> listAdapterOpciones;
     private ArrayList<ElementoMenu> listElementos;
+    private ArrayList<Boolean> opcionesAgregadasAlPedido;
 
     private DecimalFormat f = new DecimalFormat("##.00");
 
@@ -38,8 +44,15 @@ public class MainActivity extends AppCompatActivity implements RadioGroup.OnChec
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         setParametros();
+
         listViewOpciones.setAdapter(listAdapterOpciones);
+        listViewOpciones.setChoiceMode(android.widget.ListView.CHOICE_MODE_MULTIPLE);
+
         rgOpcionesPlato.setOnCheckedChangeListener(this);
+
+        buttonAgregar.setOnClickListener(this);
+
+        tvPedidos.setMovementMethod(new ScrollingMovementMethod());
     }
 
     private void setParametros(){
@@ -53,7 +66,7 @@ public class MainActivity extends AppCompatActivity implements RadioGroup.OnChec
         buttonConfirmar = (Button) findViewById(R.id.buttonConfirmar);
         buttonReiniciar = (Button) findViewById(R.id.buttonReiniciar);
         listViewOpciones = (ListView) findViewById(R.id.listViewOpciones);
-        listElementos = new ArrayList<ElementoMenu>();
+        listElementos = new ArrayList<>();
         listAdapterOpciones = new ArrayAdapter(this, android.R.layout.simple_list_item_multiple_choice, listElementos);
     }
 
@@ -64,21 +77,35 @@ public class MainActivity extends AppCompatActivity implements RadioGroup.OnChec
             case R.id.radioButtonPlato:
                 listElementos.clear();
                 listElementos.addAll(Arrays.asList(listaPlatos));
-                listAdapterOpciones.notifyDataSetChanged();
                 break;
             case R.id.radioButtonPostre:
                 listElementos.clear();
                 listElementos.addAll(Arrays.asList(listaPostre));
-                listAdapterOpciones.notifyDataSetChanged();
                 break;
             case R.id.radioButtonBebida:
                 listElementos.clear();
                 listElementos.addAll(Arrays.asList(listaBebidas));
-                listAdapterOpciones.notifyDataSetChanged();
+                break;
+        }
+        listViewOpciones.clearChoices();
+        listAdapterOpciones.notifyDataSetChanged();
+    }
+
+    public void onClick(View button) {
+        switch (button.getId()){
+            case R.id.buttonAgregar:
+                SparseBooleanArray posicionesCheckeadas = listViewOpciones.getCheckedItemPositions();
+                agregarPedido(posicionesCheckeadas);
+                listViewOpciones.clearChoices();
+                break;
+            case R.id.buttonConfirmar:
+                break;
+            case R.id.buttonReiniciar:
                 break;
 
         }
     }
+
 
     class ElementoMenu {
         private Integer id;
@@ -127,7 +154,7 @@ public class MainActivity extends AppCompatActivity implements RadioGroup.OnChec
 
         @Override
         public String toString() {
-            return this.nombre+ "( "+f.format(this.precio)+")";
+            return this.nombre+ " ("+f.format(this.precio)+")";
         }
     }
 
@@ -174,7 +201,12 @@ public class MainActivity extends AppCompatActivity implements RadioGroup.OnChec
         listaPostre[12]=new ElementoMenu(13,"IceCreamSandwich");
         listaPostre[13]=new ElementoMenu(14,"Frozen Yougurth");
         listaPostre[14]=new ElementoMenu(15,"Queso y Batata");
-
     }
 
+    private void agregarPedido(SparseBooleanArray posicion){
+        for (int i = 0; i < listViewOpciones.getCount(); i++) {
+            if(posicion.get(i))
+                tvPedidos.setText(tvPedidos.getText() + "\n" + listElementos.get(i).toString());
+        }
+    }
 }
