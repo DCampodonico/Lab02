@@ -1,5 +1,5 @@
 # Laboratorio 2
-* Campodónico, Daniel
+* Campodonico, Daniel
 * Gioria, Emiliano
 * Moretti, Lucas
 
