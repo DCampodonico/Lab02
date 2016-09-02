@@ -32,6 +32,7 @@ import android.widget.RadioGroup;
 import android.widget.Spinner;
 import android.widget.Switch;
 import android.widget.TextView;
+import android.widget.Toast;
 import android.widget.ToggleButton;
 
 import java.text.DecimalFormat;
@@ -112,8 +113,7 @@ public class MainActivity extends AppCompatActivity implements RadioGroup.OnChec
     public void onClick(View button) {
         switch (button.getId()){
             case R.id.buttonAgregar:
-                SparseBooleanArray posicionesCheckeadas = listViewOpciones.getCheckedItemPositions();
-                agregarPedido(posicionesCheckeadas);
+                agregarPedido();
                 listViewOpciones.clearChoices();
                 break;
             case R.id.buttonConfirmar:
@@ -221,10 +221,16 @@ public class MainActivity extends AppCompatActivity implements RadioGroup.OnChec
         listaPostre[14]=new ElementoMenu(15,"Queso y Batata");
     }
 
-    private void agregarPedido(SparseBooleanArray posicion){
-        for (int i = 0; i < listViewOpciones.getCount(); i++) {
-            if(posicion.get(i))
-                tvPedidos.setText(tvPedidos.getText() + "\n" + listElementos.get(i).toString());
+    private void agregarPedido(){
+        SparseBooleanArray posicionesCheckeadas = listViewOpciones.getCheckedItemPositions();
+        if(posicionesCheckeadas.size()!=0) {
+            for (int i = 0; i < listViewOpciones.getCount(); i++) {
+                if (posicionesCheckeadas.get(i))
+                    tvPedidos.setText(tvPedidos.getText() + "\n" + listElementos.get(i).toString());
+            }
+        }
+        else{
+            Toast.makeText(this, "Debe seleccionar algo del menú",Toast.LENGTH_SHORT).show();
         }
     }
 }
