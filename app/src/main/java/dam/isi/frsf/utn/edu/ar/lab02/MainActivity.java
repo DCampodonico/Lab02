@@ -225,7 +225,7 @@ public class MainActivity extends AppCompatActivity implements RadioGroup.OnChec
         if(posicionesCheckeadas.size()!=0) {
             for (int i = 0; i < listViewOpciones.getCount(); i++) {
                 if (posicionesCheckeadas.get(i))
-                    tvPedidos.setText(tvPedidos.getText() + "\n" + listElementos.get(i).toString());
+                    tvPedidos.setText(tvPedidos.getText() + (tvPedidos.getText().toString()==""? "" : "\n") + listElementos.get(i).toString());
             }
         }
         else{
