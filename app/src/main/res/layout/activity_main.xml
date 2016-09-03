@@ -72,6 +72,7 @@
             android:layout_height="wrap_content"
             android:textAppearance="?android:attr/textAppearanceSmall"
             android:scrollbars="vertical"
+            android:fadeScrollbars="false"
             android:maxLines="7"
             android:id="@+id/tvPedidos" />
 

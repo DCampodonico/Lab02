@@ -19,12 +19,10 @@
 package dam.isi.frsf.utn.edu.ar.lab02;
 
 import android.os.Bundle;
-import android.support.annotation.BoolRes;
 import android.support.v7.app.AppCompatActivity;
 import android.text.method.ScrollingMovementMethod;
 import android.util.SparseBooleanArray;
 import android.view.View;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
@@ -115,6 +113,7 @@ public class MainActivity extends AppCompatActivity implements RadioGroup.OnChec
             case R.id.buttonAgregar:
                 agregarPedido();
                 listViewOpciones.clearChoices();
+                listAdapterOpciones.notifyDataSetChanged();
                 break;
             case R.id.buttonConfirmar:
                 break;
