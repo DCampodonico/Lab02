@@ -47,7 +47,7 @@ public class MainActivity extends AppCompatActivity implements RadioGroup.OnChec
     private Button buttonAgregar, buttonConfirmar, buttonReiniciar;
     private ListView listViewOpciones;
     private ArrayAdapter<ElementoMenu> listAdapterOpciones;
-    private ArrayList<ElementoMenu> listElementos;
+    private ArrayList<ElementoMenu> listElementos, pedidoActual;
     private ArrayList<Boolean> opcionesAgregadasAlPedido;
 
     private DecimalFormat f = new DecimalFormat("##.00");
@@ -68,6 +68,8 @@ public class MainActivity extends AppCompatActivity implements RadioGroup.OnChec
         rgOpcionesPlato.setOnCheckedChangeListener(this);
 
         buttonAgregar.setOnClickListener(this);
+        buttonConfirmar.setOnClickListener(this);
+        buttonReiniciar.setOnClickListener(this);
 
         tvPedidos.setMovementMethod(new ScrollingMovementMethod());
     }
@@ -84,6 +86,7 @@ public class MainActivity extends AppCompatActivity implements RadioGroup.OnChec
         buttonReiniciar = (Button) findViewById(R.id.buttonReiniciar);
         listViewOpciones = (ListView) findViewById(R.id.listViewOpciones);
         listElementos = new ArrayList<>();
+        pedidoActual = new ArrayList<>();
         listAdapterOpciones = new ArrayAdapter(this, android.R.layout.simple_list_item_multiple_choice, listElementos);
     }
 
@@ -112,15 +115,16 @@ public class MainActivity extends AppCompatActivity implements RadioGroup.OnChec
         switch (button.getId()){
             case R.id.buttonAgregar:
                 agregarPedido();
-                listViewOpciones.clearChoices();
-                listAdapterOpciones.notifyDataSetChanged();
                 break;
             case R.id.buttonConfirmar:
                 break;
             case R.id.buttonReiniciar:
+                tvPedidos.setText("");
+                pedidoActual.clear();
                 break;
-
         }
+        listViewOpciones.clearChoices();
+        listAdapterOpciones.notifyDataSetChanged();
     }
 
 
@@ -224,8 +228,10 @@ public class MainActivity extends AppCompatActivity implements RadioGroup.OnChec
         SparseBooleanArray posicionesCheckeadas = listViewOpciones.getCheckedItemPositions();
         if(posicionesCheckeadas.size()!=0) {
             for (int i = 0; i < listViewOpciones.getCount(); i++) {
-                if (posicionesCheckeadas.get(i))
-                    tvPedidos.setText(tvPedidos.getText() + (tvPedidos.getText().toString()==""? "" : "\n") + listElementos.get(i).toString());
+                if (posicionesCheckeadas.get(i)){
+                    pedidoActual.add(listElementos.get(i));
+                    tvPedidos.setText(tvPedidos.getText() + (tvPedidos.getText().toString().equals("")? "" : "\n") + listElementos.get(i).toString());
+                }
             }
         }
         else{
