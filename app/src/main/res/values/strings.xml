@@ -29,4 +29,8 @@
     <string name="btn_agregar">AGREGAR</string>
     <string name="btn_confirmar">CONFIRMAR PEDIDO</string>
     <string name="btn_reiniciar">REINICIAR</string>
+    <string name="total">Total %.2f</string>
+    <string name="toast_seleccion_vacia">Debe seleccionar algo del menú</string>
+    <string name="toast_pedido_ya_confirmado">El pedido ya ha sido confirmado</string>
+    <string name="toast_pedido_vacio">Debe realizar su pedido antes de confirmar</string>
 </resources>

@@ -74,6 +74,7 @@
             android:scrollbars="vertical"
             android:fadeScrollbars="false"
             android:maxLines="7"
+            android:minLines="7"
             android:id="@+id/tvPedidos" />
 
         <RadioGroup

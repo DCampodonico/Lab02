@@ -49,6 +49,7 @@ public class MainActivity extends AppCompatActivity implements RadioGroup.OnChec
     private ArrayAdapter<ElementoMenu> listAdapterOpciones;
     private ArrayList<ElementoMenu> listElementos, pedidoActual;
     private ArrayList<Boolean> opcionesAgregadasAlPedido;
+    private boolean pedidoConfirmado;
 
     private DecimalFormat f = new DecimalFormat("##.00");
 
@@ -87,6 +88,7 @@ public class MainActivity extends AppCompatActivity implements RadioGroup.OnChec
         listViewOpciones = (ListView) findViewById(R.id.listViewOpciones);
         listElementos = new ArrayList<>();
         pedidoActual = new ArrayList<>();
+        pedidoConfirmado = false;
         listAdapterOpciones = new ArrayAdapter(this, android.R.layout.simple_list_item_multiple_choice, listElementos);
     }
 
@@ -117,10 +119,10 @@ public class MainActivity extends AppCompatActivity implements RadioGroup.OnChec
                 agregarPedido();
                 break;
             case R.id.buttonConfirmar:
+                confirmarPedido();
                 break;
             case R.id.buttonReiniciar:
-                tvPedidos.setText("");
-                pedidoActual.clear();
+                reiniciarPedido();
                 break;
         }
         listViewOpciones.clearChoices();
@@ -226,16 +228,48 @@ public class MainActivity extends AppCompatActivity implements RadioGroup.OnChec
 
     private void agregarPedido(){
         SparseBooleanArray posicionesCheckeadas = listViewOpciones.getCheckedItemPositions();
-        if(posicionesCheckeadas.size()!=0) {
-            for (int i = 0; i < listViewOpciones.getCount(); i++) {
-                if (posicionesCheckeadas.get(i)){
-                    pedidoActual.add(listElementos.get(i));
-                    tvPedidos.setText(tvPedidos.getText() + (tvPedidos.getText().toString().equals("")? "" : "\n") + listElementos.get(i).toString());
+        if(pedidoConfirmado){
+            Toast.makeText(this, getResources().getString(R.string.toast_pedido_ya_confirmado), Toast.LENGTH_SHORT).show();
+        }
+        else {
+            if (posicionesCheckeadas.size() != 0) {
+                for (int i = 0; i < listViewOpciones.getCount(); i++) {
+                    if (posicionesCheckeadas.get(i)) {
+                        pedidoActual.add(listElementos.get(i));
+                        tvPedidos.setText(tvPedidos.getText() + (tvPedidos.getText().toString().equals("") ? "" : "\n") + listElementos.get(i).toString());
+                    }
                 }
             }
+            else {
+                Toast.makeText(this, getResources().getString(R.string.toast_seleccion_vacia), Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
+
+    private void  confirmarPedido(){
+        if(pedidoConfirmado){
+            Toast.makeText(this, getResources().getString(R.string.toast_pedido_ya_confirmado), Toast.LENGTH_SHORT).show();
         }
         else{
-            Toast.makeText(this, "Debe seleccionar algo del menú",Toast.LENGTH_SHORT).show();
+            if(pedidoActual.isEmpty()){
+                Toast.makeText(this, getResources().getString(R.string.toast_pedido_vacio),Toast.LENGTH_SHORT).show();
+            }
+            else{
+                double total = 0;
+                for(ElementoMenu item : pedidoActual){
+                    total += item.getPrecio();
+                }
+                String s = getResources().getString(R.string.total).toString();
+                s = String.format(s, total);
+                tvPedidos.setText(tvPedidos.getText() + "\n" + s);
+                pedidoConfirmado = true;
+            }
         }
+    }
+
+    private void reiniciarPedido(){
+        tvPedidos.setText("");
+        pedidoActual.clear();
+        pedidoConfirmado = false;
     }
 }
