@@ -49,6 +49,7 @@ public class MainActivity extends AppCompatActivity implements RadioGroup.OnChec
     private ArrayAdapter<ElementoMenu> listAdapterOpciones;
     private ArrayList<ElementoMenu> listElementos, pedidoActual;
     private ArrayList<Boolean> opcionesAgregadasAlPedido;
+    private ArrayAdapter<CharSequence> adapterSpinner;
     private boolean pedidoConfirmado;
 
     private DecimalFormat f = new DecimalFormat("##.00");
@@ -65,6 +66,8 @@ public class MainActivity extends AppCompatActivity implements RadioGroup.OnChec
 
         listViewOpciones.setAdapter(listAdapterOpciones);
         listViewOpciones.setChoiceMode(android.widget.ListView.CHOICE_MODE_MULTIPLE);
+
+        spnHorario.setAdapter(adapterSpinner);
 
         rgOpcionesPlato.setOnCheckedChangeListener(this);
 
@@ -90,6 +93,7 @@ public class MainActivity extends AppCompatActivity implements RadioGroup.OnChec
         pedidoActual = new ArrayList<>();
         pedidoConfirmado = false;
         listAdapterOpciones = new ArrayAdapter(this, android.R.layout.simple_list_item_multiple_choice, listElementos);
+        adapterSpinner = ArrayAdapter.createFromResource(this, R.array.valores_spinner, android.R.layout.simple_spinner_item);
     }
 
     @Override
@@ -259,7 +263,7 @@ public class MainActivity extends AppCompatActivity implements RadioGroup.OnChec
                 for(ElementoMenu item : pedidoActual){
                     total += item.getPrecio();
                 }
-                String s = getResources().getString(R.string.total).toString();
+                String s = getResources().getString(R.string.total);
                 s = String.format(s, total);
                 tvPedidos.setText(tvPedidos.getText() + "\n" + s);
                 pedidoConfirmado = true;
