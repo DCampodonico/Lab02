@@ -2,7 +2,7 @@
 
 Aplicación Android de un restaurante para que los comensales hagan sus pedidos, indicando si van a reservar mesa o pedir delivery, la hora del pedido, si desea que se le notifique 1 hora antes y sus opciones del menú.
 
-![](img/Screenshot_2016-09-04-16-07-03.png)
+![](img/Screenshot_2016-09-06-16-08-42.png)
 
 #Credits
 Daniel Campodonico  
