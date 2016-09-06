@@ -21,39 +21,36 @@ package dam.isi.frsf.utn.edu.ar.lab02;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.text.method.ScrollingMovementMethod;
-import android.util.SparseBooleanArray;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.RadioGroup;
 import android.widget.Spinner;
-import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
-import android.widget.ToggleButton;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Locale;
 import java.util.Random;
 
-public class MainActivity extends AppCompatActivity implements RadioGroup.OnCheckedChangeListener, View.OnClickListener {
-    private ToggleButton tbDeliveryReservarMesa;
+public class MainActivity extends AppCompatActivity implements RadioGroup.OnCheckedChangeListener, AdapterView.OnItemClickListener, View.OnClickListener {
     private Spinner spnHorario;
-    private Switch swNotificacion;
     private TextView tvPedidos;
     private RadioGroup rgOpcionesPlato;
     private Button buttonAgregar, buttonConfirmar, buttonReiniciar;
     private ListView listViewOpciones;
+    private ArrayList<ElementoMenu> listElementos;
     private ArrayAdapter<ElementoMenu> listAdapterOpciones;
-    private ArrayList<ElementoMenu> listElementos, pedidoActual;
-    private ArrayList<Boolean> opcionesAgregadasAlPedido;
+    private ElementoMenu pedidoActual;
     private ArrayAdapter<CharSequence> adapterSpinner;
+    private double cuenta;
     private boolean pedidoConfirmado;
 
     private DecimalFormat f = new DecimalFormat("##.00");
-
     private ElementoMenu[] listaBebidas;
     private ElementoMenu[] listaPlatos;
     private ElementoMenu[] listaPostre;
@@ -65,12 +62,12 @@ public class MainActivity extends AppCompatActivity implements RadioGroup.OnChec
         setParametros();
 
         listViewOpciones.setAdapter(listAdapterOpciones);
-        listViewOpciones.setChoiceMode(android.widget.ListView.CHOICE_MODE_MULTIPLE);
+        listViewOpciones.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
 
         spnHorario.setAdapter(adapterSpinner);
 
         rgOpcionesPlato.setOnCheckedChangeListener(this);
-
+        listViewOpciones.setOnItemClickListener(this);
         buttonAgregar.setOnClickListener(this);
         buttonConfirmar.setOnClickListener(this);
         buttonReiniciar.setOnClickListener(this);
@@ -80,20 +77,18 @@ public class MainActivity extends AppCompatActivity implements RadioGroup.OnChec
 
     private void setParametros(){
         iniciarListas();
-        tbDeliveryReservarMesa = (ToggleButton) findViewById(R.id.tbDeliveryReservarMesa);
         spnHorario = (Spinner) findViewById(R.id.spnHorario);
         tvPedidos = (TextView) findViewById(R.id.tvPedidos);
-        swNotificacion = (Switch) findViewById(R.id.swNotificacion);
         rgOpcionesPlato = (RadioGroup) findViewById(R.id.rgOpcionesPlato);
         buttonAgregar = (Button) findViewById(R.id.buttonAgregar);
         buttonConfirmar = (Button) findViewById(R.id.buttonConfirmar);
         buttonReiniciar = (Button) findViewById(R.id.buttonReiniciar);
         listViewOpciones = (ListView) findViewById(R.id.listViewOpciones);
         listElementos = new ArrayList<>();
-        pedidoActual = new ArrayList<>();
-        pedidoConfirmado = false;
-        listAdapterOpciones = new ArrayAdapter(this, android.R.layout.simple_list_item_multiple_choice, listElementos);
+        listAdapterOpciones = new ArrayAdapter<>(this, android.R.layout.simple_list_item_single_choice, listElementos);
         adapterSpinner = ArrayAdapter.createFromResource(this, R.array.valores_spinner, android.R.layout.simple_spinner_item);
+        cuenta = 0;
+        pedidoConfirmado = false;
     }
 
     @Override
@@ -101,38 +96,100 @@ public class MainActivity extends AppCompatActivity implements RadioGroup.OnChec
         switch (checkedId){
             case -1: break;
             case R.id.radioButtonPlato:
-                listElementos.clear();
-                listElementos.addAll(Arrays.asList(listaPlatos));
+                cambiarLista(listaPlatos);
                 break;
             case R.id.radioButtonPostre:
-                listElementos.clear();
-                listElementos.addAll(Arrays.asList(listaPostre));
+                cambiarLista(listaPostre);
                 break;
             case R.id.radioButtonBebida:
-                listElementos.clear();
-                listElementos.addAll(Arrays.asList(listaBebidas));
+                cambiarLista(listaBebidas);
                 break;
         }
+    }
+
+    private void cambiarLista(ElementoMenu[] lista){
+        listElementos.clear();
+        listElementos.addAll(Arrays.asList(lista));
+        actualizarVistaLista();
+    }
+
+    private void actualizarVistaLista(){
         listViewOpciones.clearChoices();
+        pedidoActual = null;
+        listViewOpciones.setItemChecked(-1, true);
         listAdapterOpciones.notifyDataSetChanged();
     }
 
+    @Override
+    public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+        switch (adapterView.getId()) {
+            case -1:
+                break;
+            case R.id.listViewOpciones:
+                pedidoActual = (ElementoMenu) listViewOpciones.getItemAtPosition(i);
+                break;
+        }
+    }
+
+    @Override
     public void onClick(View button) {
         switch (button.getId()){
+            case -1:
+                break;
             case R.id.buttonAgregar:
                 agregarPedido();
+                actualizarVistaLista();
                 break;
             case R.id.buttonConfirmar:
                 confirmarPedido();
+                actualizarVistaLista();
                 break;
             case R.id.buttonReiniciar:
                 reiniciarPedido();
+                actualizarVistaLista();
                 break;
         }
-        listViewOpciones.clearChoices();
-        listAdapterOpciones.notifyDataSetChanged();
     }
 
+    private void agregarPedido(){
+        if(pedidoConfirmado){
+            Toast.makeText(this, getResources().getString(R.string.toast_pedido_ya_confirmado), Toast.LENGTH_SHORT).show();
+        }
+        else {
+            if (pedidoActual != null) {
+                String textoPedido = tvPedidos.getText() + (tvPedidos.getText().toString().equals("") ? "" : "\n") + pedidoActual;
+                cuenta += pedidoActual.getPrecio();
+                tvPedidos.setText(textoPedido);
+            }
+            else {
+                Toast.makeText(this, getResources().getString(R.string.toast_seleccion_vacia), Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
+
+    private void  confirmarPedido(){
+        if(pedidoConfirmado){
+            Toast.makeText(this, getResources().getString(R.string.toast_pedido_ya_confirmado), Toast.LENGTH_SHORT).show();
+        }
+        else{
+            if(cuenta == 0){
+                Toast.makeText(this, getResources().getString(R.string.toast_pedido_vacio),Toast.LENGTH_SHORT).show();
+            }
+            else{
+                String textoPedido = getResources().getString(R.string.total);
+                textoPedido = String.format(Locale.getDefault(),textoPedido, cuenta);
+                textoPedido = tvPedidos.getText() + "\n" + textoPedido;
+                tvPedidos.setText(textoPedido);
+                pedidoConfirmado = true;
+            }
+        }
+    }
+
+    private void reiniciarPedido(){
+        tvPedidos.setText("");
+        cuenta = 0;
+        pedidoConfirmado = false;
+    }
 
     class ElementoMenu {
         private Integer id;
@@ -229,51 +286,4 @@ public class MainActivity extends AppCompatActivity implements RadioGroup.OnChec
         listaPostre[13]=new ElementoMenu(14,"Frozen Yougurth");
         listaPostre[14]=new ElementoMenu(15,"Queso y Batata");
     }
-
-    private void agregarPedido(){
-        SparseBooleanArray posicionesCheckeadas = listViewOpciones.getCheckedItemPositions();
-        if(pedidoConfirmado){
-            Toast.makeText(this, getResources().getString(R.string.toast_pedido_ya_confirmado), Toast.LENGTH_SHORT).show();
-        }
-        else {
-            if (posicionesCheckeadas.size() != 0) {
-                for (int i = 0; i < listViewOpciones.getCount(); i++) {
-                    if (posicionesCheckeadas.get(i)) {
-                        pedidoActual.add(listElementos.get(i));
-                        tvPedidos.setText(tvPedidos.getText() + (tvPedidos.getText().toString().equals("") ? "" : "\n") + listElementos.get(i).toString());
-                    }
-                }
-            }
-            else {
-                Toast.makeText(this, getResources().getString(R.string.toast_seleccion_vacia), Toast.LENGTH_SHORT).show();
-            }
-        }
-    }
-
-    private void  confirmarPedido(){
-        if(pedidoConfirmado){
-            Toast.makeText(this, getResources().getString(R.string.toast_pedido_ya_confirmado), Toast.LENGTH_SHORT).show();
-        }
-        else{
-            if(pedidoActual.isEmpty()){
-                Toast.makeText(this, getResources().getString(R.string.toast_pedido_vacio),Toast.LENGTH_SHORT).show();
-            }
-            else{
-                double total = 0;
-                for(ElementoMenu item : pedidoActual){
-                    total += item.getPrecio();
-                }
-                String s = getResources().getString(R.string.total);
-                s = String.format(s, total);
-                tvPedidos.setText(tvPedidos.getText() + "\n" + s);
-                pedidoConfirmado = true;
-            }
-        }
-    }
-
-    private void reiniciarPedido(){
-        tvPedidos.setText("");
-        pedidoActual.clear();
-        pedidoConfirmado = false;
-    }
-}
+ }
